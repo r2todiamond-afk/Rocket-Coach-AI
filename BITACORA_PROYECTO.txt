@@ -1,0 +1,65 @@
+BITACORA DEL PROYECTO ROCKET LEAGUE AI COACH
+Actualizada: 2026-10-14
+
+Este archivo resume las conversaciones, decisiones, hallazgos y cambios del proyecto. Es un registro acumulativo, no una transcripcion literal. No guardar claves, tokens ni otros secretos aqui.
+
+1. PROYECTOS ACTUALES
+
+- coachia: herramienta Python de escritorio que procesa archivos .replay mediante rrrocket, extrae telemetria y aplica detectores/reglas para producir observaciones y reportes tacticos.
+- files: pipeline Python que analiza videos con Claude. Incluye los comandos aprender, analizar, analizar-partido y analizar-app. La app Electron usa este ultimo comando.
+- rl-coach-app: aplicacion de escritorio Electron con reproductor de video, lista de observaciones con timestamps, timeline, filtros y opcion de pedir a la IA que revise una observacion usando contexto del jugador.
+- rl-coach-app no analiza replays directamente: actualmente invoca files/rl_coach.py analizar-app con un video.
+
+2. HALLAZGOS Y CAMBIOS YA REALIZADOS
+
+Coachia:
+- El detector de REDIRECT comparaba la velocidad actual con ella misma porque la velocidad previa se sobrescribia antes de calcular el angulo. Se corrigio para conservar la muestra previa.
+- Se agregaron pruebas para distinguir un cambio real de direccion de un simple cambio de rapidez.
+- La distribucion del panel ya no se presenta como explicacion causal de por que se perdio. Muestra indicadores detectados, reparte porcentajes enteros que suman 100 y no inventa categorias si no hay indicadores.
+- La interfaz denomina los puntajes calculados por formulas como indices heuristicos.
+- El README de files contenia una clave de Anthropic literal. Se reemplazo por un marcador; si la clave anterior era valida, debe revocarse y rotarse. La clave no se copia en este registro.
+- Durante una prueba, un replay genero un JSON de aproximadamente 109 MB. La generacion del reporte tenia hasta tres llamadas a Claude por jugada y no mostraba avance. Se consolido el enriquecimiento en una llamada por jugada, se agrego progreso y se corrigio la falta de importacion de json al interpretar la respuesta.
+- Se comprobo tambien la ruta local de respaldo cuando no hay API disponible.
+
+rl-coach-app:
+- Se escapo el campo tipo de cada observacion antes de insertarlo en HTML.
+- La URL del video se genera con la utilidad de rutas de Node, para manejar correctamente rutas de Windows y caracteres reservados.
+- Al finalizar el analisis, Electron usa la ruta del JSON que informa rl_coach.py, en vez de escoger el archivo mas reciente de la carpeta analisis.
+- Las rutas relativas de resultado se resuelven desde la carpeta del script Python.
+- Se evitan avisos duplicados cuando Python no puede iniciarse.
+- Se agregaron pruebas Node para extraccion y resolucion de rutas, URL de video y casos sin resultado.
+
+Validacion registrada:
+- Las pruebas focalizadas de Coachia llegaron a 6 casos exitosos.
+- Las pruebas de rl-coach-app llegaron a 4 casos exitosos; node --check no reporto errores en los scripts JavaScript.
+- No se ha validado de punta a punta una partida completa con API, ni un instalador Electron, ni una reconstruccion 3D de un replay.
+
+3. CONCLUSIONES DE PRODUCTO
+
+- Coachia ofrece la ruta de datos mas prometedora para analizar replays porque extrae telemetria, pero sus heuristicas y puntajes requieren validacion antes de presentarse como certezas.
+- rl-coach-app tiene una experiencia de revision de video mas clara, pero depende actualmente de video y de la interpretacion visual del modelo.
+- Direccion recomendada: usar rl-coach-app como experiencia del producto y reutilizar/adaptar el procesamiento de replays de Coachia como backend, cuando los datos y detectores esten validados.
+- Es preferible un perfil local sin cuenta al principio. Las cuentas y la sincronizacion en la nube pueden esperar hasta que el analisis aporte valor constante.
+
+4. IDEAS DEL USUARIO Y DECISIONES DE ALCANCE
+
+- Reducir la necesidad de grabar partidas y permitir seleccionar el replay guardado por Rocket League.
+- Explorar abrir Rocket League y reproducir el replay elegido para revisar momentos, mover la camara y explicar jugadas.
+- El usuario aclaro que Epic permite iniciar Rocket League sin anticheat para usar mapas locales de entrenamiento de BakkesMod. Registrar esta opcion como contexto legitimo para entrenamiento local; verificar siempre las interfaces y reglas vigentes antes de distribuir integraciones.
+- Analizar un replay grabado no cambia sus acciones. Una alternativa de la IA puede visualizarse como trayectoria o escenario contrafactual, pero debe etiquetarse como simulacion, no como lo que realmente ocurrio.
+- Explorar anotaciones visuales para errores, aciertos, trayectorias, riesgos y consecuencias.
+- Explorar BakkesMod y sus herramientas para obtener datos o apoyar entrenamiento local, sujeto a compatibilidad y permisos.
+- Crear un perfil progresivo con acciones positivas, errores recurrentes y estadisticas por modo. Mostrar tendencias con numero de partidas suficiente y evitar puntajes globales engañosos.
+- Mantener replays/videos locales por defecto; guardar primero observaciones y metricas. Si en el futuro hay nube, agregar controles de privacidad, exportacion y borrado.
+
+5. PRINCIPIOS DE DISEÑO ACORDADOS
+
+- Priorizar fiabilidad de los consejos antes que cuentas, gamificacion o integraciones grandes.
+- Separar hechos observados, inferencias, nivel de confianza y recomendaciones.
+- Diferenciar errores de decision, errores de ejecucion y resultados propios de un 50/50 o de incertidumbre.
+- La visualizacion 3D puede hacer una recomendacion comprensible, pero no reproduce por si misma la fisica exacta ni permite cambiar retroactivamente una replay.
+- No usar atajos que interfieran con partidas competitivas. Mantener la exploracion de Rocket League/BakkesMod en contextos permitidos de replay o entrenamiento local.
+
+6. PROXIMO OBJETIVO
+
+Definir y construir un MVP que abra un .replay, permita identificar al jugador, extraiga eventos y telemetria reproducibles, y presente observaciones verificables en una interfaz local. Ver TAREAS_PENDIENTES.txt para el plan priorizado.

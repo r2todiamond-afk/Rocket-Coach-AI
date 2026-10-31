@@ -1,0 +1,29 @@
+{
+  "name": "rl-coach-app",
+  "version": "0.1.0",
+  "description": "Rocket League AI Coach — reproductor con análisis de partidas generado por Claude",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "test": "node --test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.rlcoach.app",
+    "productName": "RL Coach",
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ]
+  }
+}

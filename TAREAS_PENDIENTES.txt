@@ -1,0 +1,76 @@
+TAREAS PENDIENTES - ROCKET LEAGUE AI COACH
+Actualizada: 2026-10-14
+
+Objetivo inicial: construir una aplicacion local que analice replays fiables, explique aciertos y errores con evidencia y permita revisar los momentos en una interfaz. Las ideas de 3D, BakkesMod y perfiles se desarrollan en fases posteriores.
+
+FASE 0 - PREPARAR Y ASEGURAR EL ENTORNO
+
+[ ] Rotar/revocar la clave Anthropic que estuvo expuesta en files/README.md, si era valida; configurar la nueva solo en una variable de entorno local.
+[ ] Mantener una copia de trabajo local fuera de OneDrive mientras se resuelve el limite de almacenamiento y verificar que los archivos se abren desde la ruta local.
+[ ] Ejecutar las pruebas existentes de Coachia y rl-coach-app en la copia local.
+[ ] Hacer una prueba manual corta de rl-coach-app con video para verificar arranque, progreso, carga del JSON y navegacion de observaciones.
+
+FASE 1 - MVP DE ANALISIS DE REPLAYS
+
+[ ] Definir un replay de referencia y anotar a mano algunos eventos y timestamps esperados.
+[ ] Ejecutar rrrocket sobre el .replay y confirmar que el extractor produce posiciones, orientaciones, velocidades, equipos, pelota, goles y tiempos correctos.
+[ ] Validar estabilidad de identidad de jugadores y actor IDs a traves de goles, respawns y kickoffs.
+[ ] Verificar coordenadas, orientacion/cuaterniones, frecuencia temporal y unidades contra el replay de referencia.
+[ ] Agregar pruebas de regresion para extraction/eventos con fixtures pequenos y casos de 1v1, 2v2 y 3v3.
+[ ] Hacer que rl-coach-app permita seleccionar .replay y ejecute el backend de telemetria de Coachia; no requerir grabar video para el flujo principal.
+[ ] Permitir que el usuario seleccione cual jugador del replay quiere analizar y confirmar modo/equipo.
+[ ] Mostrar primero un resumen de eventos y observaciones ligado a timestamps del replay.
+
+FASE 2 - CALIDAD Y CONFIANZA DE LOS CONSEJOS
+
+[ ] Separar cada conclusion en evidencia observada, inferencia, confianza y recomendacion concreta.
+[ ] Diferenciar error de decision, error de ejecucion y resultado incierto/50-50; no penalizar un resultado adverso por si solo.
+[ ] Revisar los umbrales tacticos existentes y probarlos contra partidas etiquetadas manualmente antes de usarlos para scores.
+[ ] Calibrar o retirar porcentajes de certeza y responsabilidad que no esten respaldados por datos.
+[ ] Incluir aciertos y buenas decisiones en el analisis, no solo errores.
+[ ] Crear un conjunto de replays de validacion con ejemplos positivos, negativos e inciertos y comparar resultados del detector con revision humana.
+[ ] Limitar/enriquecer con IA de forma controlada; mostrar progreso, manejar timeouts/errores y conservar un reporte parcial si falla una llamada.
+
+FASE 3 - VISOR Y ANOTACIONES
+
+[ ] Implementar reproduccion de replay con controles de pausa, velocidad, avance y salto a eventos.
+[ ] Crear una linea de tiempo con goles, toques, challenges, errores y aciertos.
+[ ] Dibujar overlays sencillos 2D/3D para posiciones, trayectorias y zonas relevantes.
+[ ] Empezar con formas/modelos simples de cancha, auto y pelota; despues evaluar modelos 3D licenciados/compatibles.
+[ ] Interpolar posiciones y rotaciones entre muestras y validar visualmente el resultado contra la replay.
+[ ] Permitir vista libre/espectador y sincronizar la observacion seleccionada con el momento correspondiente.
+[ ] Representar alternativas de decision como simulaciones/contrafactuales claramente etiquetados, nunca como eventos reales del replay.
+
+FASE 4 - PERFIL LOCAL Y PROGRESO
+
+[ ] Definir un formato versionado local para perfiles, partidas, observaciones y metricas.
+[ ] Permitir identificar al jugador y guardar su alias/nombre de replay, con opcion de corregirlo.
+[ ] Separar estadisticas por modo, rango/contexto disponible y cantidad de partidas.
+[ ] Mostrar tendencias de acciones positivas, errores recurrentes y cambios en el tiempo; indicar el tamaño de muestra.
+[ ] Recomendar una o dos prioridades de practica por ciclo, y medir si aparecen mejoras en partidas posteriores.
+[ ] Dar opciones locales de exportar, respaldar y borrar historial.
+
+FASE 5 - INTEGRACIONES OPCIONALES
+
+[ ] Investigar interfaces documentadas y compatibilidad de BakkesMod para lectura de datos de replay/entrenamiento.
+[ ] Probar lanzamiento o navegacion de replays y mapas de entrenamiento locales solo por mecanismos compatibles y permitidos.
+[ ] Mantener la app en modo de lectura/entrenamiento; no interferir con partidas competitivas ni controles de proteccion.
+[ ] Evaluar overlay de escritorio o plugin unicamente despues de validar necesidad, compatibilidad y reglas aplicables.
+[ ] Considerar cuentas/sincronizacion en nube solo cuando exista una necesidad clara entre dispositivos; definir seguridad, consentimiento, retencion y borrado.
+
+FASE 6 - CALIDAD Y DISTRIBUCION
+
+[ ] Agregar pruebas para IPC, seleccion de archivos, fallos de Python, resultados de replay y casos de JSON invalido.
+[ ] Ejecutar pruebas de extremo a extremo con replays reales de duracion y modos diferentes.
+[ ] Medir consumo de memoria y tiempos; los JSON grandes requieren evitar bloqueos de UI y parseo pesado en el proceso principal.
+[ ] Actualizar Electron/dependencias antes de distribuir y probar empaquetado NSIS en Windows.
+[ ] Preparar instalacion clara de Python, rrrocket, dependencias y configuracion de API sin secretos incrustados.
+
+ORDEN RECOMENDADO
+
+1. Completar Fase 0.
+2. Validar extractor y eventos de la Fase 1 con replays anotados.
+3. Mejorar calidad/confianza de consejos en Fase 2.
+4. Crear visor funcional y overlays basicos en Fase 3.
+5. Agregar perfiles locales en Fase 4.
+6. Evaluar BakkesMod, nube y distribucion en las fases 5 y 6.

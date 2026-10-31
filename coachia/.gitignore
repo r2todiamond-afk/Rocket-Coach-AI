@@ -1,0 +1,10 @@
+# Ignorar API Keys y secretos
+ApiKeyClaudeAnthropic.txt
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

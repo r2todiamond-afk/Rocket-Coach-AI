@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>RL Coach</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- Barra superior -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <h1>RL <span class="brand-accent">Coach</span></h1>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-config" class="btn btn-icon" title="Configurar ubicación del script">⚙</button>
+        <button id="btn-video" class="btn btn-outline">Elegir video</button>
+        <button id="btn-analisis" class="btn btn-outline">Cargar análisis existente</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- Columna del reproductor -->
+      <section class="player-col">
+        <div class="video-shell">
+          <video id="video" controls></video>
+          <div id="video-empty" class="video-empty">
+            <p>Cargá un video para empezar</p>
+            <span>Usá el botón "Elegir video" arriba — el análisis se genera solo</span>
+          </div>
+        </div>
+
+        <!-- Línea de tiempo con marcas de eventos -->
+        <div id="timeline" class="timeline">
+          <div id="timeline-track" class="timeline-track"></div>
+          <div id="timeline-ticks" class="timeline-ticks"></div>
+          <div id="timeline-cursor" class="timeline-cursor"></div>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item"><i class="dot dot-acierto"></i>Acierto</span>
+          <span class="legend-item"><i class="dot dot-error"></i>Error</span>
+          <span class="legend-item"><i class="dot dot-jugada_dudosa"></i>Jugada dudosa</span>
+          <span class="legend-item"><i class="dot dot-mecanica_sugerida"></i>Mecánica sugerida</span>
+          <span class="legend-item"><i class="dot dot-mecanica_de_mas"></i>Mecánica de más</span>
+        </div>
+      </section>
+
+      <!-- Panel lateral de observaciones -->
+      <aside class="panel">
+        <div class="panel-header">
+          <h2>Observaciones</h2>
+          <span id="contador" class="contador">0</span>
+        </div>
+
+        <div class="filtros" id="filtros">
+          <button class="filtro activo" data-tipo="todos">Todos</button>
+          <button class="filtro" data-tipo="acierto">Aciertos</button>
+          <button class="filtro" data-tipo="error">Errores</button>
+          <button class="filtro" data-tipo="jugada_dudosa">Dudosas</button>
+          <button class="filtro" data-tipo="mecanica_sugerida">Sugeridas</button>
+          <button class="filtro" data-tipo="mecanica_de_mas">De más</button>
+        </div>
+
+        <div id="lista" class="lista">
+          <div class="lista-vacia">
+            <p>Sin análisis cargado</p>
+            <span>Elegí un video y el análisis se genera automáticamente</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Modal: configurar ubicación del script (primera vez) -->
+  <div id="modal-config" class="modal-overlay oculto">
+    <div class="modal">
+      <h3>Ubicación de tu script</h3>
+      <p>Para analizar videos automáticamente, necesito saber dónde está tu archivo
+        <code>rl_coach.py</code> (el que ya venís usando desde la terminal).</p>
+      <p class="modal-nota">Solo hace falta hacer esto una vez — lo voy a recordar.</p>
+      <div class="modal-actions">
+        <button id="btn-elegir-script" class="btn btn-primary">Elegir rl_coach.py</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: contexto opcional antes de analizar -->
+  <div id="modal-contexto" class="modal-overlay oculto">
+    <div class="modal">
+      <h3>Antes de arrancar</h3>
+      <p>¿Algún contexto sobre esta partida? (opcional)</p>
+      <input id="input-contexto" type="text" class="input" placeholder="ej. ranked 1v1, final reñida..." />
+      <div class="modal-actions">
+        <button id="btn-cancelar-contexto" class="btn btn-outline">Cancelar</button>
+        <button id="btn-confirmar-contexto" class="btn btn-primary">Analizar partida</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: explicación del jugador sobre una observación puntual -->
+  <div id="modal-explicacion" class="modal-overlay oculto">
+    <div class="modal">
+      <h3>¿Qué pasó realmente?</h3>
+      <p id="explicacion-obs-titulo" class="modal-obs-titulo"></p>
+      <p>Contale a tu coach el contexto que no pudo ver en las imágenes.</p>
+      <textarea id="input-explicacion" class="input textarea" rows="4"
+        placeholder="ej. Fue un 50/50 legítimo contra el rival, ambos llegamos al mismo tiempo..."></textarea>
+      <div class="modal-actions">
+        <button id="btn-cancelar-explicacion" class="btn btn-outline">Cancelar</button>
+        <button id="btn-confirmar-explicacion" class="btn btn-primary">Revisar observación</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: progreso del análisis -->
+  <div id="modal-progreso" class="modal-overlay oculto">
+    <div class="modal modal-ancho">
+      <div class="progreso-header">
+        <span class="spinner"></span>
+        <h3>Analizando tu partida...</h3>
+      </div>
+      <p class="modal-nota">Esto puede tardar varios minutos según la duración del video. No cierres la app.</p>
+      <div id="progreso-log" class="progreso-log"></div>
+      <div id="progreso-error" class="progreso-error oculto"></div>
+      <div class="modal-actions">
+        <button id="btn-cerrar-progreso" class="btn btn-outline oculto">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
